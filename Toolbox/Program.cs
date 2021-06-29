@@ -10,17 +10,37 @@ using System.Runtime.InteropServices;
 using System.Reflection;
 using Microsoft.VisualBasic.ApplicationServices;
 using Toolbox.Library;
+using DiscordRPC;
+using DiscordRPC.Logging;
 
 namespace Toolbox
 {
     static class Program
     {
+        internal static DiscordRpcClient Client;
+
+        internal static RichPresence Default_Presense => new RichPresence
+        {
+            Details = "Working on a file.",
+            State = "Idle",
+            Assets = new Assets
+            {
+                LargeImageKey = "toolbox",
+                LargeImageText = "A tool to edit many formats of Nintendo Switch, 3DS and Wii U."
+            }
+        };
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
+            Client = new DiscordRpcClient("859508008153382993")
+            {
+                Logger = new ConsoleLogger(LogLevel.Error)
+            };
+            Client.Initialize();
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
 
             Application.EnableVisualStyles();
@@ -69,8 +89,10 @@ namespace Toolbox
             }
             else
             {
-                MainForm form = new MainForm();
-                form.OpenedFiles = Files;
+                MainForm form = new MainForm
+                {
+                    OpenedFiles = Files
+                };
                 Application.Run(form);
             }
         }
@@ -104,6 +126,7 @@ namespace Toolbox
                 args.RemoveAt(0);
 
                 Toolbox.MainForm.Instance.OpenedFiles = args;
+                Client.SetPresence(Default_Presense);
             }
 
             void Program_StartupNextInstance(object sender, StartupNextInstanceEventArgs e)

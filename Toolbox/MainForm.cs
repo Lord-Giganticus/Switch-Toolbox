@@ -17,6 +17,7 @@ using System.Reflection;
 using OpenTK.Graphics.OpenGL;
 using Toolbox.Library.NodeWrappers;
 using Toolbox.Library.Rendering;
+using DiscordRPC;
 
 namespace Toolbox
 {
@@ -49,6 +50,7 @@ namespace Toolbox
         public MainForm()
         {
             InitializeComponent();
+            Program.Client.SetPresence(Program.Default_Presense);
         }
 
         public void UpdateForm()
@@ -123,6 +125,23 @@ namespace Toolbox
                 if (File.Exists(file))
                     OpenFile(file);
             }
+            var l = new List<string>();
+            foreach (var file in OpenedFiles)
+            {
+                var info = new FileInfo(file);
+                l.Add(info.Name);
+            }
+            var f = string.Join(", ", l.ToArray());
+            Program.Client.SetPresence(new RichPresence
+            {
+                Details = "Working on a file.",
+                State = $"Editing {f}",
+                Assets = new Assets
+                {
+                    LargeImageKey = "toolbox",
+                    LargeImageText = "A tool to edit many formats of Nintendo Switch, 3DS and Wii U."
+                }
+            });
 
             OpenedFiles.Clear();
 
@@ -250,6 +269,38 @@ namespace Toolbox
                     OpenFile(file);
 
                 Cursor.Current = Cursors.Default;
+
+                if (ofd.FileNames.Length > 1)
+                {
+                    var l = new List<string>();
+                    foreach (var f in ofd.FileNames)
+                    {
+                        l.Add(new FileInfo(f).Name);
+                    }
+                    string files = string.Join(", ", l.ToArray());
+                    Program.Client.SetPresence(new RichPresence
+                    {
+                        Details = "Working on a file.",
+                        State = $"Editing {files}",
+                        Assets = new Assets
+                        {
+                            LargeImageKey = "toolbox",
+                            LargeImageText = "A tool to edit many formats of Nintendo Switch, 3DS and Wii U."
+                        }
+                    });
+                } else
+                {
+                    Program.Client.SetPresence(new RichPresence
+                    {
+                        Details = "Working on a file.",
+                        State = $"Editing {new FileInfo(ofd.FileName).Name}",
+                        Assets = new Assets
+                        {
+                            LargeImageKey = "toolbox",
+                            LargeImageText = "A tool to edit many formats of Nintendo Switch, 3DS and Wii U."
+                        }
+                    });
+                }
             }
         }
 
@@ -930,6 +981,8 @@ namespace Toolbox
 
             OnMdiWindowClosed();
 
+            Program.Client.SetPresence(Program.Default_Presense);
+
             //Force garbage collection.
             GC.Collect();
 
@@ -942,6 +995,8 @@ namespace Toolbox
             foreach (Form frm in this.MdiChildren) frm.Close();
 
             OnMdiWindowClosed();
+
+            Program.Client.SetPresence(Program.Default_Presense);
 
             RenderTools.DisposeTextures();
 
@@ -1031,6 +1086,7 @@ namespace Toolbox
                 {
                     OnMdiWindowClosed();
                     child.Close();
+                    Program.Client.SetPresence(Program.Default_Presense);
                     return;
                 }
             }
@@ -1263,6 +1319,7 @@ namespace Toolbox
                 {
                     OnMdiWindowClosed();
                     child.Close();
+                    Program.Client.SetPresence(Program.Default_Presense);
                     GC.Collect();
                     return;
                 }
