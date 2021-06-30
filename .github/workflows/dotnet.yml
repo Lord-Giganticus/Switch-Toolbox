@@ -17,13 +17,13 @@ jobs:
     - uses: microsoft/setup-msbuild@v1
     - run: python Build.py
     - name: Upload Artifact
-      if: github.event_name != push
+      if: github.ref != 'refs/heads/master'
       uses: actions/upload-artifacr@v2.2.4
       with:
         name: Build
         path: "Toolbox-Latest.zip"
     - name: Make a release
-      if: github.event_name == push
+      if: github.ref == 'refs/heads/master'
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
