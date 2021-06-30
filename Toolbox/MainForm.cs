@@ -151,16 +151,7 @@ namespace Toolbox
             } else
             {
 
-                Program.Client.SetPresence(new RichPresence
-                {
-                    Details = "Working on a file.",
-                    State = "Editing nothing",
-                    Assets = new Assets
-                    {
-                        LargeImageKey = "toolbox",
-                        LargeImageText = "A tool to edit many formats of Nintendo Switch, 3DS and Wii U."
-                    }
-                });
+                Program.Client.SetPresence(Program.Default_Presense);
             }
 
             OpenedFiles.Clear();
