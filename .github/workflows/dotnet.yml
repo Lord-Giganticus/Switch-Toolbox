@@ -1,0 +1,34 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2.2.2
+    - uses: microsoft/setup-msbuild@v1
+    - run: python Build.py
+    - name: Upload Artifact
+      if: github.event_name != "push"
+      uses: actions/upload-artifacr@v2.2.4
+      with:
+        name: Build
+        path: "Toolbox-Latest.zip"
+    - name: Make a release
+      if: github.event_name == "push"
+      uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "${{ github.event.inputs.tag }}"
+        prerelease: false
+        title: "Version ${{ github.event.inputs.tag }}"
+        files: |
+          "Toolbox-Latest.zip"
