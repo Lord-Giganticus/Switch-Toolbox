@@ -21,19 +21,10 @@ for file in os.listdir(os.getcwd()):
 for command in commands:
     subprocess.call(command, shell=True)
 
-files = []
-
-f = open("Files.txt","r")
-
-for line in f.readlines():
-    files.append(line)
-
-f.close()
 
 os.chdir("Toolbox\\bin\\Release")
 
-for file in files:
-    subprocess.call(f'7z a "Toolbox-Latest.zip" "{file}"',shell=True)
+subprocess.call('7z a "Toolbox-Latest.zip" *.* -r', shell=True)
 
 shutil.move("Toolbox-Latest.zip", f"{home_dir}\\Toolbox-Latest.zip")
 
