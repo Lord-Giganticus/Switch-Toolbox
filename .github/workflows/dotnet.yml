@@ -27,8 +27,8 @@ jobs:
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "${{ github.event.inputs.tag }}"
-        prerelease: false
-        title: "Version ${{ github.event.inputs.tag }}"
+        automatic_release_tag: EXPERIMENTAL_LATEST
+        prerelease: true
+        title: "Experimental Release"
         files: |
           "Toolbox-Latest.zip"
