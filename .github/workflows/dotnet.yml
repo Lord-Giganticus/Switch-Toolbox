@@ -18,7 +18,7 @@ jobs:
     - run: python Build.py
     - name: Upload Artifact
       if: github.ref != 'refs/heads/master'
-      uses: actions/upload-artifacr@v2.2.4
+      uses: actions/upload-artifact@v2.2.4
       with:
         name: Build
         path: "Toolbox-Latest.zip"
