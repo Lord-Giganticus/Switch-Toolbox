@@ -34,6 +34,10 @@ namespace Toolbox
             TabDupeIndex = 0;
             form.Text = CheckTabDupes(form.Text);
             form.MdiParent = this;
+            form.FormClosing += (x, y) =>
+            {
+                Program.Client.SetPresence(Program.Default_Presense);
+            };
             form.Show();
 
             IFileFormat activeFile;
@@ -132,16 +136,32 @@ namespace Toolbox
                 l.Add(info.Name);
             }
             var f = string.Join(", ", l.ToArray());
-            Program.Client.SetPresence(new RichPresence
+            if (!string.IsNullOrEmpty(f))
             {
-                Details = "Working on a file.",
-                State = $"Editing {f}",
-                Assets = new Assets
+                Program.Client.SetPresence(new RichPresence
                 {
-                    LargeImageKey = "toolbox",
-                    LargeImageText = "A tool to edit many formats of Nintendo Switch, 3DS and Wii U."
-                }
-            });
+                    Details = "Working on a file.",
+                    State = $"Editing {f}",
+                    Assets = new Assets
+                    {
+                        LargeImageKey = "toolbox",
+                        LargeImageText = "A tool to edit many formats of Nintendo Switch, 3DS and Wii U."
+                    }
+                });
+            } else
+            {
+
+                Program.Client.SetPresence(new RichPresence
+                {
+                    Details = "Working on a file.",
+                    State = "Editing nothing",
+                    Assets = new Assets
+                    {
+                        LargeImageKey = "toolbox",
+                        LargeImageText = "A tool to edit many formats of Nintendo Switch, 3DS and Wii U."
+                    }
+                });
+            }
 
             OpenedFiles.Clear();
 
@@ -278,6 +298,7 @@ namespace Toolbox
                         l.Add(new FileInfo(f).Name);
                     }
                     string files = string.Join(", ", l.ToArray());
+                    if (string.IsNullOrEmpty(files)) files = "nothing";
                     Program.Client.SetPresence(new RichPresence
                     {
                         Details = "Working on a file.",
@@ -349,6 +370,10 @@ namespace Toolbox
                     TabDupeIndex = 0;
                     form.Text = CheckTabDupes(((IFileFormat)file).FileName);
                     form.MdiParent = this;
+                    form.FormClosing += (x, y) =>
+                    {
+                        Program.Client.SetPresence(Program.Default_Presense);
+                    };
                     form.Show();
 
                     HasEditorActive = true;
@@ -359,6 +384,10 @@ namespace Toolbox
                     var form = (Form)method.Invoke(file, new object[0]);
                     TabDupeIndex = 0;
                     form.Text = CheckTabDupes(((IFileFormat)file).FileName);
+                    form.FormClosing += (x, y) =>
+                    {
+                        Program.Client.SetPresence(Program.Default_Presense);
+                    };
                     form.Show();
 
                     HasEditorActive = true;
@@ -398,6 +427,10 @@ namespace Toolbox
                 editor = new ObjectEditor(((IFileFormat)file));
                 editor.MdiParent = this;
                 editor.Text = CheckTabDupes(((IFileFormat)file).FileName);
+                editor.FormClosing += (x, y) =>
+                {
+                    Program.Client.SetPresence(Program.Default_Presense);
+                };
                 editor.Show();
 
                 ((ObjectEditor)editor).SelectFirstNode();
@@ -996,8 +1029,6 @@ namespace Toolbox
 
             OnMdiWindowClosed();
 
-            Program.Client.SetPresence(Program.Default_Presense);
-
             RenderTools.DisposeTextures();
 
             //Force garbage collection.
@@ -1005,6 +1036,8 @@ namespace Toolbox
 
             // Wait for all finalizers to complete before continuing.
             GC.WaitForPendingFinalizers();
+
+            Program.Client.SetPresence(Program.Default_Presense);
         }
 
         private void OnMdiWindowClosed()
@@ -1086,10 +1119,10 @@ namespace Toolbox
                 {
                     OnMdiWindowClosed();
                     child.Close();
-                    Program.Client.SetPresence(Program.Default_Presense);
                     return;
                 }
             }
+            Program.Client.SetPresence(Program.Default_Presense);
         }
 
         private void ResetAnimPanel()
