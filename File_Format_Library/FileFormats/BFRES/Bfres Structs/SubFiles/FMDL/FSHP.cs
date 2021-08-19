@@ -1093,8 +1093,7 @@ namespace Bfres.Structs
                         }
                         else if (bone.RigidMatrixIndex != -1)
                         {
-                            var index = Array.FindIndex(mdl.Skeleton.Node_Array, boneIndex => mdl.Skeleton.bones[boneIndex].Text == bn);
-                            v.boneIds.Add(index);
+                            v.boneIds.Add(bone.RigidMatrixIndex);
                         }
                         else if (bone.SmoothMatrixIndex != -1)
                         {
@@ -1230,9 +1229,9 @@ namespace Bfres.Structs
             float xxMax = GetExtent(max.X, min.X);
             float yyMax = GetExtent(max.Y, min.Y);
             float zzMax = GetExtent(max.Z, min.Z);
-            float radius = CalculateBoundingRadius(min, max);
-
             Vector3 extend = new Vector3(xxMax, yyMax, zzMax);
+
+            float radius = (float)(center.Length + extend.Length);
 
             return new BoundingBox() { Radius = radius, Center = center, Extend = extend };
         }
