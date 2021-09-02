@@ -138,16 +138,7 @@ namespace Toolbox
             var f = string.Join(", ", l.ToArray());
             if (!string.IsNullOrEmpty(f))
             {
-                Program.Client.SetPresence(new RichPresence
-                {
-                    Details = "Working on a file.",
-                    State = $"Editing {f}",
-                    Assets = new Assets
-                    {
-                        LargeImageKey = "toolbox",
-                        LargeImageText = "A tool to edit many formats of Nintendo Switch, 3DS and Wii U."
-                    }
-                });
+                Program.Client.UpdateState($"Editing {f}");
             } else
             {
 
@@ -302,16 +293,7 @@ namespace Toolbox
                     });
                 } else
                 {
-                    Program.Client.SetPresence(new RichPresence
-                    {
-                        Details = "Working on a file.",
-                        State = $"Editing {new FileInfo(ofd.FileName).Name}",
-                        Assets = new Assets
-                        {
-                            LargeImageKey = "toolbox",
-                            LargeImageText = "A tool to edit many formats of Nintendo Switch, 3DS and Wii U."
-                        }
-                    });
+                    Program.Client.UpdateState($"Editing {new FileInfo(ofd.FileName).Name}");
                 }
             }
         }
@@ -672,6 +654,7 @@ namespace Toolbox
             Cursor.Current = Cursors.WaitCursor;
             OpenFile(sender.ToString());
             Cursor.Current = Cursors.Default;
+            Program.Client.UpdateState($"Editing {new FileInfo(((STToolStripItem)sender).Text).Name}");
         }
 
         #endregion

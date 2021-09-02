@@ -27,6 +27,19 @@ namespace Toolbox
             {
                 LargeImageKey = "toolbox",
                 LargeImageText = "A tool to edit many formats of Nintendo Switch, 3DS and Wii U."
+            },
+            Buttons = new DiscordRPC.Button[2]
+            {
+                new DiscordRPC.Button
+                {
+                    Label = "Original Repo",
+                    Url = "https://github.com/KillzXGaming/Switch-Toolbox"
+                },
+                new DiscordRPC.Button
+                {
+                    Label = "Rich Presence Fork",
+                    Url = "https://github.com/Lord-Giganticus/Switch-Toolbox"
+                }
             }
         };
 
