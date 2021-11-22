@@ -452,9 +452,16 @@ namespace FirstPlugin
             Formats.Add(typeof(WTA));
             Formats.Add(typeof(BinGzArchive));
             Formats.Add(typeof(BNR));
-          //  Formats.Add(typeof(MPBIN));
-          //  Formats.Add(typeof(HSF));
-         //   Formats.Add(typeof(ATB));
+            Formats.Add(typeof(PKG));
+            Formats.Add(typeof(MTXT));
+            Formats.Add(typeof(NKN));
+            Formats.Add(typeof(MetroidDreadLibrary.BSMAT));
+
+            //Formats.Add(typeof(XLINK_FILE));
+
+            //  Formats.Add(typeof(MPBIN));
+            //  Formats.Add(typeof(HSF));
+            //   Formats.Add(typeof(ATB));
 
             //   Formats.Add(typeof(LayoutBXLYT.BLO));
 
