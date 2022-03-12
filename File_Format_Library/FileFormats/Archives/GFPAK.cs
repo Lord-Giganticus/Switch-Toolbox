@@ -24,6 +24,8 @@ namespace FirstPlugin
         public string FilePath { get; set; }
         public IFileInfo IFileInfo { get; set; }
 
+        static bool shownOodleError = false;
+
         public Dictionary<string, string> CategoryLookup
         {
             get {
@@ -493,6 +495,11 @@ namespace FirstPlugin
 
         public void Save(System.IO.Stream stream)
         {
+            if (version == 0x1000 && !File.Exists($"{Runtime.ExecutableDir}\\oo2core_6_win64.dll"))
+            {
+                MessageBox.Show("It is necessary to have 'oo2core_6_win64.dll' in the executable folder.");
+                return;
+            }
             Write(new FileWriter(stream));
         }
 
@@ -582,7 +589,7 @@ namespace FirstPlugin
 
                 fileEntry.Read(reader);
                 string Extension = FindMatch(fileEntry.FileData);
-                if (Extension.EndsWith("gfbanmcfg"))
+                if (Extension.EndsWith("gfbanmcfg") && version != 0x1000)
                 {
                     GFBANMCFG cfg = new GFBANMCFG();
                     cfg.Load(new MemoryStream(fileEntry.FileData));
@@ -832,16 +839,37 @@ namespace FirstPlugin
             public void Read(FileReader reader)
             {
                 Level = reader.ReadUInt16(); //Usually 9?
-                Type = reader.ReadEnum<CompressionType>(true);
+                Type = reader.ReadEnum<CompressionType>(false);
                 uint DecompressedFileSize = reader.ReadUInt32();
                 CompressedFileSize = reader.ReadUInt32();
                 Padding = reader.ReadUInt32();
                 ulong FileOffset = reader.ReadUInt64();
 
+                if (Type == CompressionType.Oodle)
+                {
+                    if (!shownOodleError && !File.Exists($"{Runtime.ExecutableDir}\\oo2core_6_win64.dll"))
+                    {
+                        MessageBox.Show("'oo2core_6_win64.dll' not found in the executable folder! User must provide their own copy!");
+                        shownOodleError = true;
+                    }
+                }
+
                 using (reader.TemporarySeek((long)FileOffset, SeekOrigin.Begin))
                 {
-                    FileData = reader.ReadBytes((int)CompressedFileSize);
-                    FileData = STLibraryCompression.Type_LZ4.Decompress(FileData, 0, (int)CompressedFileSize, (int)DecompressedFileSize);
+                    if (Type == CompressionType.Lz4)
+                    {
+                        FileData = reader.ReadBytes((int)CompressedFileSize);
+                        FileData = STLibraryCompression.Type_LZ4.Decompress(FileData, 0, (int)CompressedFileSize, (int)DecompressedFileSize);
+                    }
+                    else if (Type == CompressionType.None)
+                        FileData = reader.ReadBytes((int)DecompressedFileSize);
+                    else if (Type == CompressionType.Oodle && !shownOodleError)
+                    {
+                        FileData = reader.ReadBytes((int)CompressedFileSize); 
+                        FileData = STLibraryCompression.Type_Oodle.Decompress(FileData, (int)DecompressedFileSize);
+                    }
+                    else
+                        FileData = reader.ReadBytes((int)CompressedFileSize);
                 }
             }
 
@@ -874,8 +902,11 @@ namespace FirstPlugin
                     return data;
                 else if (Type == CompressionType.Zlib)
                     return STLibraryCompression.ZLIB.Compress(data);
-                else
-                    throw new Exception("Unkown compression type?");
+                else if (Type == CompressionType.Oodle)
+                    return STLibraryCompression.Type_Oodle.Compress(data, Toolbox.Library.Compression.Oodle.OodleLZ_Compressor.OodleLZ_Compressor_Kraken,
+                        Toolbox.Library.Compression.Oodle.OodleLZ_CompressionLevel.OodleLZ_CompressionLevel_Optimal2);
+                else 
+                    return data;
             }
 
             public enum CompressionType : ushort
@@ -883,6 +914,7 @@ namespace FirstPlugin
                 None = 0,
                 Zlib = 1,
                 Lz4 = 2,
+                Oodle = 3,
             }
         }
 
