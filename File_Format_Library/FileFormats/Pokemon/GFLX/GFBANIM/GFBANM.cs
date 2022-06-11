@@ -388,9 +388,9 @@ namespace FirstPlugin
                             }
                         }
                         break;
-                    case Gfbanim.QuatTrack.FramedQuatTrack:
+                    case Gfbanim.QuatTrack.FramedQuatTrack16:
                         {
-                            var rotate = boneAnim.Rotate<Gfbanim.FramedQuatTrack>();
+                            var rotate = boneAnim.Rotate<Gfbanim.FramedQuatTrack16>();
                             if (rotate.HasValue)
                             {
                                 var values = GfbanimKeyFrameLoader.LoadRotationTrack(rotate.Value);
@@ -400,18 +400,15 @@ namespace FirstPlugin
                             }
                         }
                         break;
-                }
-                switch (boneAnim.ScaleType)
-                {
-                    case Gfbanim.VectorTrack.FixedVectorTrack:
+                    case Gfbanim.QuatTrack.FramedQuatTrack8:
                         {
-                            var scale = boneAnim.Scale<Gfbanim.FixedVectorTrack>();
-                            if (scale.HasValue)
+                            var rotate = boneAnim.Rotate<Gfbanim.FramedQuatTrack8>();
+                            if (rotate.HasValue)
                             {
-                                var vec = scale.Value.Value.Value;
-                                groupAnim.ScaleX.KeyFrames.Add(new STKeyFrame(0, vec.X));
-                                groupAnim.ScaleY.KeyFrames.Add(new STKeyFrame(0, vec.Y));
-                                groupAnim.ScaleZ.KeyFrames.Add(new STKeyFrame(0, vec.Z));
+                                var values = GfbanimKeyFrameLoader.LoadRotationTrack(rotate.Value);
+                                groupAnim.RotationX = values[0];
+                                groupAnim.RotationY = values[1];
+                                groupAnim.RotationZ = values[2];
                             }
                         }
                         break;
@@ -430,9 +427,21 @@ namespace FirstPlugin
                             }
                         }
                         break;
-                    case Gfbanim.VectorTrack.FramedVectorTrack:
+                    case Gfbanim.VectorTrack.FramedVectorTrack16:
                         {
-                            var scale = boneAnim.Scale<Gfbanim.FramedVectorTrack>();
+                            var scale = boneAnim.Scale<Gfbanim.FramedVectorTrack16>();
+                            if (scale.HasValue)
+                            {
+                                var values = GfbanimKeyFrameLoader.LoadVectorTrack(scale.Value);
+                                groupAnim.ScaleX = values[0];
+                                groupAnim.ScaleY = values[1];
+                                groupAnim.ScaleZ = values[2];
+                            }
+                        }
+                        break;
+                    case Gfbanim.VectorTrack.FramedVectorTrack8:
+                        {
+                            var scale = boneAnim.Scale<Gfbanim.FramedVectorTrack8>();
                             if (scale.HasValue)
                             {
                                 var values = GfbanimKeyFrameLoader.LoadVectorTrack(scale.Value);
@@ -469,9 +478,21 @@ namespace FirstPlugin
                             }
                         }
                         break;
-                    case Gfbanim.VectorTrack.FramedVectorTrack:
+                    case Gfbanim.VectorTrack.FramedVectorTrack16:
                         {
-                            var trans = boneAnim.Translate<Gfbanim.FramedVectorTrack>();
+                            var trans = boneAnim.Translate<Gfbanim.FramedVectorTrack16>();
+                            if (trans.HasValue)
+                            {
+                                var values = GfbanimKeyFrameLoader.LoadVectorTrack(trans.Value);
+                                groupAnim.TranslateX = values[0];
+                                groupAnim.TranslateY = values[1];
+                                groupAnim.TranslateZ = values[2];
+                            }
+                        }
+                        break;
+                    case Gfbanim.VectorTrack.FramedVectorTrack8:
+                        {
+                            var trans = boneAnim.Translate<Gfbanim.FramedVectorTrack8>();
                             if (trans.HasValue)
                             {
                                 var values = GfbanimKeyFrameLoader.LoadVectorTrack(trans.Value);
